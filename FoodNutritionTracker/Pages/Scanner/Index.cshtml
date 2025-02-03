@@ -1,0 +1,74 @@
+@page
+@model FoodNutritionTracker.Pages.Scanner.IndexModel
+@{
+    ViewData["Title"] = "Barcode Scanner";
+}
+
+<div class="container">
+    <div id="scanner-container">
+        <div id="scanner"></div>
+        <div id="product-details">
+            <h3>Scanned Barcode:</h3>
+            <p id="scanned-result">No barcode scanned yet.</p>
+
+            <h3>Product Details:</h3>
+            <p id="product-name">Product Name: -</p>
+            <p id="product-brand">Brand: -</p>
+            <p id="product-nutrition-grade">Nutrition Grade: -</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Initialize Quagga when the page loads
+        document.addEventListener("DOMContentLoaded", function () {
+            initializeQuagga();
+        });
+
+        function initializeQuagga() {
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector('#scanner'),
+                    constraints: {
+                        width:400,
+                        height: 200,
+                        facingMode: "environment" // Use the rear camera
+                    }
+                },
+                decoder: {
+                    readers: ["ean_reader", "upc_reader"] // Supported barcode formats
+                }
+            }, function (err) {
+                if (err) {
+                    console.error("Failed to initialize Quagga:", err);
+                    return;
+                }
+                console.log("Quagga initialized successfully.");
+                Quagga.start();
+            });
+
+            Quagga.onDetected(function (result) {
+                const barcode = result.codeResult.code;
+                document.getElementById("scanned-result").innerText = "Scanned Barcode: " + barcode;
+
+                // Fetch product details from the server
+                fetchProductDetails(barcode);
+            });
+        }
+
+        async function fetchProductDetails(barcode) {
+            const response = await fetch(`/Scanner/GetProductDetails?barcode=${barcode}`);
+            const data = await response.json();
+            if (data.success) {
+                document.getElementById("product-name").innerText = "Product Name: " + data.productName;
+                document.getElementById("product-brand").innerText = "Brand: " + data.brand;
+                document.getElementById("product-nutrition-grade").innerText = "Nutrition Grade: " + data.nutritionGrade;
+            } else {
+                alert("Product not found.");
+            }
+        }
+    </script>
+}
