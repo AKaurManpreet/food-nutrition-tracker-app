@@ -1,0 +1,42 @@
+@page
+@model FoodNutritionTracker.Pages.MealSuggestion
+@{
+    ViewData["Title"] = "Meal Suggestion";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label for="calories">Daily Calorie Target:</label>
+        <input type="number" class="form-control" id="calories" name="DailyCalories" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Get Meal Plan</button>
+</form>
+
+@if (Model.MealPlan != null)
+{
+    <h3 class="mt-4">Suggested Meal Plan</h3>
+    <div class="card mb-3">
+        <div class="card-header">Breakfast (@Model.MealPlan.Breakfast.Calories calories)</div>
+        <div class="card-body">
+            <h5 class="card-title">@Model.MealPlan.Breakfast.Name</h5>
+            <p class="card-text">@Model.MealPlan.Breakfast.Description</p>
+        </div>
+    </div>
+    <div class="card mb-3">
+        <div class="card-header">Lunch (@Model.MealPlan.Lunch.Calories calories)</div>
+        <div class="card-body">
+            <h5 class="card-title">@Model.MealPlan.Lunch.Name</h5>
+            <p class="card-text">@Model.MealPlan.Lunch.Description</p>
+        </div>
+    </div>
+    <div class="card mb-3">
+        <div class="card-header">Dinner (@Model.MealPlan.Dinner.Calories calories)</div>
+        <div class="card-body">
+            <h5 class="card-title">@Model.MealPlan.Dinner.Name</h5>
+            <p class="card-text">@Model.MealPlan.Dinner.Description</p>
+        </div>
+    </div>
+    <p>Total Calories: @Model.MealPlan.TotalCalories</p>
+}
