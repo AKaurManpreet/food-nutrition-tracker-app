@@ -9,26 +9,32 @@ namespace FoodNutritionTracker.Pages.Scanner
 {
     public class IndexModel : PageModel
     {
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly string _apiUrl;
 
         public IndexModel(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
-            _httpClient = httpClientFactory.CreateClient();
-            _apiUrl = configuration["OpenFoodFactsApi:Url"];
+            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            _apiUrl = configuration["OpenFoodFactsApi:Url"] ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public void OnGet()
         {
         }
 
-        public async Task<JsonResult> OnGetProductDetailsAsync(string barcode)
+        public async Task<IActionResult> OnGetProductDetailsAsync(string barcode)
         {
-            string url = $"{_apiUrl}/{barcode}.json";
+            if (string.IsNullOrEmpty(barcode))
+            {
+                return new JsonResult(new { success = false, message = "Barcode is required." });
+            }
+
+            string url = $"{_apiUrl}/api/v2/product/{barcode}";
 
             try
             {
-                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                using var httpClient = _httpClientFactory.CreateClient();
+                HttpResponseMessage response = await httpClient.GetAsync(url);
                 if (response.IsSuccessStatusCode)
                 {
                     string jsonData = await response.Content.ReadAsStringAsync();
@@ -39,9 +45,9 @@ namespace FoodNutritionTracker.Pages.Scanner
                         return new JsonResult(new
                         {
                             success = true,
-                            productName = productDetails.ProductName ?? "Unknown",
-                            brand = productDetails.Brand ?? "Unknown",
-                            nutritionGrade = productDetails.NutritionGrade ?? "Unknown"
+                            productName = productDetails.ProductName,
+                            brand = productDetails.Brand,
+                            nutritionGrade = productDetails.NutritionGrade
                         });
                     }
                 }
@@ -49,7 +55,7 @@ namespace FoodNutritionTracker.Pages.Scanner
             }
             catch (Exception ex)
             {
-                return new JsonResult(new { success = false, message = ex.Message });
+                return new JsonResult(new { success = false, message = $"An error occurred: {ex.Message}" });
             }
         }
 
@@ -57,19 +63,17 @@ namespace FoodNutritionTracker.Pages.Scanner
         {
             try
             {
-                JObject jsonObject = JObject.Parse(jsonData);
-                if (jsonObject["status"]?.ToObject<int>() != 1)
-                    return null;
+                var jsonObject = JObject.Parse(jsonData);
+                var product = jsonObject["product"] as JObject;
 
-                JObject? product = (JObject?)jsonObject["product"];
                 if (product == null)
                     return null;
 
                 return new ProductDetails
                 {
-                    ProductName = (string?)product["product_name"] ?? "Unknown",
-                    Brand = (string?)product["brands"] ?? "Unknown",
-                    NutritionGrade = (string?)product["nutrition_grade_fr"] ?? "Unknown"
+                    ProductName = product["product_name"]?.ToString() ?? "Unknown",
+                    Brand = product["brands"]?.ToString() ?? "Unknown",
+                    NutritionGrade = product["nutrition_grade_fr"]?.ToString() ?? "Unknown"
                 };
             }
             catch
@@ -78,6 +82,11 @@ namespace FoodNutritionTracker.Pages.Scanner
             }
         }
 
-        private record ProductDetails(string ProductName = "Unknown", string Brand = "Unknown", string NutritionGrade = "Unknown");
+        private class ProductDetails
+        {
+            public string ProductName { get; init; } = "Unknown";
+            public string Brand { get; init; } = "Unknown";
+            public string NutritionGrade { get; init; } = "Unknown";
+        }
     }
 }

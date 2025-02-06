@@ -5,9 +5,10 @@
 }
 
 <div class="container">
-    <div id="scanner-container">
-        <div id="scanner"></div>
-        <div id="product-details">
+    <button id="start-scanner" class="btn btn-primary mb-3">Start Scanner</button>
+    <div id="scanner-container" style="display: none;">
+        <div id="scanner" style="width: 100%; max-width: 400px; height: 300px;"></div>
+        <div id="product-details" class="mt-3">
             <h3>Scanned Barcode:</h3>
             <p id="scanned-result">No barcode scanned yet.</p>
 
@@ -20,9 +21,10 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
     <script>
-        // Initialize Quagga when the page loads
-        document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById('start-scanner').addEventListener('click', function() {
+            document.getElementById('scanner-container').style.display = 'block';
             initializeQuagga();
         });
 
@@ -33,8 +35,8 @@
                     type: "LiveStream",
                     target: document.querySelector('#scanner'),
                     constraints: {
-                        width:400,
-                        height: 200,
+                        width: 400,
+                        height: 300,
                         facingMode: "environment" // Use the rear camera
                     }
                 },
@@ -60,15 +62,25 @@
         }
 
         async function fetchProductDetails(barcode) {
-            const response = await fetch(`/Scanner/GetProductDetails?barcode=${barcode}`);
-            const data = await response.json();
-            if (data.success) {
-                document.getElementById("product-name").innerText = "Product Name: " + data.productName;
-                document.getElementById("product-brand").innerText = "Brand: " + data.brand;
-                document.getElementById("product-nutrition-grade").innerText = "Nutrition Grade: " + data.nutritionGrade;
-            } else {
-                alert("Product not found.");
+            try {
+                const response = await fetch(`/Scanner/GetProductDetails?barcode=${barcode}`);
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById("product-name").innerText = "Product Name: " + data.productName;
+                    document.getElementById("product-brand").innerText = "Brand: " + data.brand;
+                    document.getElementById("product-nutrition-grade").innerText = "Nutrition Grade: " + data.nutritionGrade;
+                } else {
+                    alert("Product not found.");
+                }
+            } catch (error) {
+                console.error("Error fetching product details:", error);
+                alert("An error occurred while fetching product details.");
             }
+        }
+
+        function stopScanner() {
+            Quagga.stop();
+            document.getElementById('scanner-container').style.display = 'none';
         }
     </script>
 }

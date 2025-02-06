@@ -7,59 +7,59 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/FoodNutritionTracker.styles.css" asp-append-version="true" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
-        header {
-            text-align: center;
-            padding: 20px;
-            background-color: #f8f9fa;
-        }
-        .container {
+        .main-container {
             flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
+            padding: 20px;
+        }
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+        .home-buttons {
+            margin-bottom: 20px;
         }
         #scanner-container {
-            margin: 20px auto;
-            max-width: 640px;
-            display: block; /* Ensure it's visible */
+            max-width: 500px;
+            width: 100%;
         }
         #scanner {
             width: 100%;
-            height: auto;
-            border: 2px solid #000;
-        }
-        #product-details {
-            margin-top: 20px;
-            font-size: 1.2em;
-        }
-        footer {
-            text-align: center;
-            padding: 10px;
-            background-color: #f8f9fa;
-            margin-top: auto;
+            height: 300px;
+            border: 1px solid #ccc;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>FoodNutritionTracker</h1>
-        <div id="home-buttons">
-            <a href="/Scanner/Index" class="btn btn-primary">Barcode Scanner</a>
-            <button id="meal-suggestion-btn" class="btn btn-secondary">Meal Suggestion</button>
+    <div class="main-container">
+        <h1 class="title">FoodNutritionTracker</h1>
+        
+        <div class="home-buttons">
+            <button id="barcode-scanner-btn" class="btn btn-primary">Barcode Scanner</button>
+            <button id="meal-suggestion-btn" class="btn btn-success">Meal Suggestion</button>
         </div>
-    </header>
 
-    <div class="container">
+        <div id="scanner-container" style="display: none;">
+            <div id="scanner"></div>
+            <p id="barcode-number"></p>
+            <div id="product-details">
+                <p id="product-name"></p>
+                <p id="product-brand"></p>
+                <p id="product-nutrition-grade"></p>
+            </div>
+        </div>
+
         <main role="main">
             @RenderBody()
         </main>
@@ -67,14 +67,69 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - FoodNutritionTracker - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            &copy; 2025 - FoodNutritionTracker
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+
+    <script>
+        document.getElementById('barcode-scanner-btn').addEventListener('click', function() {
+            var scannerContainer = document.getElementById('scanner-container');
+            scannerContainer.style.display = scannerContainer.style.display === 'none' ? 'block' : 'none';
+            if (scannerContainer.style.display === 'block') {
+                initQuagga();
+            } else {
+                Quagga.stop();
+            }
+        });
+
+        function initQuagga() {
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector("#scanner")
+                },
+                decoder: {
+                    readers: ["ean_reader", "ean_8_reader", "upc_reader"]
+                }
+            }, function(err) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+                Quagga.start();
+            });
+
+            Quagga.onDetected(function(result) {
+                var code = result.codeResult.code;
+                document.getElementById('barcode-number').textContent = "Scanned barcode: " + code;
+                fetchProductDetails(code);
+            });
+        }
+
+        function fetchProductDetails(barcode) {
+            fetch(`/Scanner/GetProductDetails?barcode=${barcode}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('product-name').textContent = "Product Name: " + data.productName;
+                        document.getElementById('product-brand').textContent = "Brand: " + data.brand;
+                        document.getElementById('product-nutrition-grade').textContent = "Nutrition Grade: " + data.nutritionGrade;
+                    } else {
+                        document.getElementById('product-details').textContent = "Product not found.";
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('product-details').textContent = "Error fetching product details.";
+                });
+        }
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
