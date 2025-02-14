@@ -3,147 +3,151 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - FoodNutritionTracker</title>
+    <title>@ViewData["Title"] - Food Nutrition Tracker</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/FoodNutritionTracker.styles.css" asp-append-version="true" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <style>
         body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        .main-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
+            background: linear-gradient(135deg, #00A9FF, #89CFF3); /* Vibrant gradient */
+            color: black;
             text-align: center;
-            padding: 20px;
+            padding: 50px;
+            font-family: 'Roboto', sans-serif;
         }
-        .title {
-            font-size: 2.5rem;
-            margin-bottom: 30px;
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .home-buttons {
-            margin-bottom: 20px;
+
+        header {
+            background-color: #34495E; /* Modern dark header */
+            color: white;
+            padding: 20px 0;
         }
-        #scanner-container {
-            max-width: 400px;
-            width: 100%;
-            margin: 0 auto;
+
+        .navbar-nav .nav-link {
+            color: #FFFFFF;
+            font-size: 1.1rem;
+            padding: 10px 15px;
         }
-        #scanner {
-            width: 100%;
-            height: 300px;
-            border: 1px solid #ccc;
+
+            .navbar-nav .nav-link:hover {
+                color: #F39C12; /* Bold yellow accent on hover */
+                text-decoration: none;
+            }
+
+        .navbar-toggler-icon {
+            background-color: #F39C12; /* Toggler icon color */
         }
-        #scan-result {
-            margin-top: 20px;
-            display: none;
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #F39C12; /* Accent yellow for brand */
+        }
+
+        .navbar-collapse {
+            justify-content: flex-end;
+        }
+
+        footer {
+            background-color: #2C3E50; /* Dark footer */
+            color: #BDC3C7;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .container {
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+
+        .footer {
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        /* Add modern button styling */
+        .btn-primary {
+            background-color: #F39C12;
+            border-color: #F39C12;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+        }
+
+            .btn-primary:hover {
+                background-color: #E67E22;
+                border-color: #E67E22;
+            }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+            .card:hover {
+                transform: translateY(-10px);
+            }
+
+        .nav-item {
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        /* Improve spacing for smaller devices */
+        
+
+        .container {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
         }
     </style>
 </head>
 <body>
-    <div class="main-container">
-        <h1 class="title">FoodNutritionTracker</h1>
-        
-        <div class="home-buttons">
-            <button id="barcode-scanner-btn" class="btn btn-primary">Barcode Scanner</button>
-            <a href="/MealSuggestion" id="meal-suggestion-btn" class="btn btn-success">Meal Suggestion</a>
-
-        </div>
-
-        <div id="scanner-container" style="display: none;">
-            <div id="scanner"></div>
-        </div>
-
-        <div id="scan-result">
-            <p id="barcode-number"></p>
-            <div id="product-details">
-                <p id="product-name"></p>
-                <p id="product-brand"></p>
-                <p id="product-nutrition-grade"></p>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-page="/Index">Food Nutrition Tracker</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
+        </nav>
+    </header>
 
-        <main role="main">
-            @RenderBody()
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()  <!-- This renders the content of the page -->
         </main>
     </div>
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - FoodNutritionTracker
+            &copy; 2025 - Food Nutrition Tracker
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
-    <script>
-        document.getElementById('barcode-scanner-btn').addEventListener('click', function() {
-            var scannerContainer = document.getElementById('scanner-container');
-            scannerContainer.style.display = scannerContainer.style.display === 'none' ? 'block' : 'none';
-            if (scannerContainer.style.display === 'block') {
-                initQuagga();
-            } else {
-                Quagga.stop();
-            }
-        });
-
-        function initQuagga() {
-            Quagga.init({
-                inputStream: {
-                    name: "Live",
-                    type: "LiveStream",
-                    target: document.querySelector("#scanner"),
-                    constraints: {
-                        width: 400,
-                        height: 300,
-                    }
-                },
-                decoder: {
-                    readers: ["ean_reader", "ean_8_reader", "upc_reader"]
-                }
-            }, function(err) {
-                if (err) {
-                    console.error(err);
-                    return;
-                }
-                Quagga.start();
-            });
-
-            Quagga.onDetected(function(result) {
-                var code = result.codeResult.code;
-                document.getElementById('barcode-number').textContent = "Scanned barcode: " + code;
-                document.getElementById('scan-result').style.display = 'block';
-                fetchProductDetails(code);
-            });
-        }
-
-        function fetchProductDetails(barcode) {
-            fetch(`/Scanner/GetProductDetails?barcode=${barcode}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById('product-name').textContent = "Product Name: " + data.productName;
-                        document.getElementById('product-brand').textContent = "Brand: " + data.brand;
-                        document.getElementById('product-nutrition-grade').textContent = "Nutrition Grade: " + data.nutritionGrade;
-                        document.getElementById('product-details').style.display = 'block';
-                    } else {
-                        document.getElementById('product-details').textContent = "Product not found.";
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('product-details').textContent = "Error fetching product details.";
-                });
-        }
-    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

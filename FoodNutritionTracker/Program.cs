@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -6,9 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-
-// Add CORS services if needed
 builder.Services.AddCors();
+builder.Services.AddApplicationInsightsTelemetry();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
@@ -23,19 +23,11 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
-// Use CORS if needed
 app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-
 app.UseAuthorization();
 
-app.MapRazorPages();
-
-// Set the default page to /Scanner/Index
-app.MapFallbackToPage("/Scanner/Index");
+app.MapRazorPages();  //  This is enough for routing Razor Pages.
 
 app.Run();

@@ -12,5 +12,8 @@
   "type": "commonjs",
   "dependencies": {
     "quagga": "^0.12.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.20.1"
   }
 }

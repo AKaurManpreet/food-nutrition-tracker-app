@@ -4,39 +4,97 @@
     ViewData["Title"] = "Meal Suggestion";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="container">
+    <h1 class="text-center mt-4">@ViewData["Title"]</h1>
 
-<form method="post">
-    <div class="form-group">
-        <label for="calories">Daily Calorie Target:</label>
-        <input type="number" class="form-control" id="calories" name="DailyCalories" required>
+    <div class="card p-4 shadow-sm border-0">
+        <form method="post">
+            <div class="form-group mb-3">
+                <label for="calories" class="form-label fw-bold">Daily Calorie Target:</label>
+                <input type="number" class="form-control rounded-3" id="calories" name="DailyCalories" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Get Meal Plan</button>
+        </form>
     </div>
-    <button type="submit" class="btn btn-primary">Get Meal Plan</button>
-</form>
 
-@if (Model.MealPlan != null)
-{
-    <h3 class="mt-4">Suggested Meal Plan</h3>
-    <div class="card mb-3">
-        <div class="card-header">Breakfast (@Model.MealPlan.Breakfast.Calories calories)</div>
-        <div class="card-body">
-            <h5 class="card-title">@Model.MealPlan.Breakfast.Name</h5>
-            <p class="card-text">@Model.MealPlan.Breakfast.Description</p>
+    @if (Model.MealPlan != null)
+    {
+        <h3 class="mt-5 text-center">Suggested Meal Plan</h3>
+
+        <div class="meal-plan">
+            <div class="meal-card">
+                <h5>Breakfast</h5>
+                <p class="calories">@Model.MealPlan.Breakfast.Calories calories</p>
+                <h6>@Model.MealPlan.Breakfast.Name</h6>
+                <p>@Model.MealPlan.Breakfast.Description</p>
+            </div>
+
+            <div class="meal-card">
+                <h5>Lunch</h5>
+                <p class="calories">@Model.MealPlan.Lunch.Calories calories</p>
+                <h6>@Model.MealPlan.Lunch.Name</h6>
+                <p>@Model.MealPlan.Lunch.Description</p>
+            </div>
+
+            <div class="meal-card">
+                <h5>Dinner</h5>
+                <p class="calories">@Model.MealPlan.Dinner.Calories calories</p>
+                <h6>@Model.MealPlan.Dinner.Name</h6>
+                <p>@Model.MealPlan.Dinner.Description</p>
+            </div>
         </div>
-    </div>
-    <div class="card mb-3">
-        <div class="card-header">Lunch (@Model.MealPlan.Lunch.Calories calories)</div>
-        <div class="card-body">
-            <h5 class="card-title">@Model.MealPlan.Lunch.Name</h5>
-            <p class="card-text">@Model.MealPlan.Lunch.Description</p>
-        </div>
-    </div>
-    <div class="card mb-3">
-        <div class="card-header">Dinner (@Model.MealPlan.Dinner.Calories calories)</div>
-        <div class="card-body">
-            <h5 class="card-title">@Model.MealPlan.Dinner.Name</h5>
-            <p class="card-text">@Model.MealPlan.Dinner.Description</p>
-        </div>
-    </div>
-    <p>Total Calories: @Model.MealPlan.TotalCalories</p>
-}
+
+        <p class="total-calories text-center fw-bold mt-3">Total Calories: @Model.MealPlan.TotalCalories</p>
+    }
+</div>
+
+<style>
+    body {
+        background-color: #f5f7fa;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .container {
+        max-width: 600px;
+        margin: auto;
+    }
+
+    .card {
+        background: white;
+        border-radius: 10px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(to right, #6a11cb, #2575fc);
+        border: none;
+        padding: 10px;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(to right, #2575fc, #6a11cb);
+        }
+
+    .meal-plan {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .meal-card {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .calories {
+        color: #6a11cb;
+        font-weight: bold;
+    }
+
+    .total-calories {
+        font-size: 1.2rem;
+        color: #333;
+    }
+</style>
